@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arunmuzik — AI Music Generator</title>
+  <meta name="description" content="Turn your ideas into full songs with AI." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo">♪</span> Arunmuzik</div>
+    <div class="credits" id="credits" title="Remaining SunoAPI credits">Credits: —</div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Make a song from an idea</h1>
+      <p>Describe a vibe, or write your own lyrics. Each generation gives you two takes.</p>
+    </section>
+
+    <section class="card">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-mode="simple" role="tab">Simple</button>
+        <button class="tab" data-mode="custom" role="tab">Custom</button>
+      </div>
+
+      <form id="form" autocomplete="off">
+        <div class="field" id="simpleFields">
+          <label for="desc">Song description</label>
+          <textarea id="desc" rows="4" maxlength="500" placeholder="An upbeat Bollywood dance track about summer nights in Mumbai, with dhol and synths"></textarea>
+          <div class="hint"><span id="descCount">0</span>/500</div>
+          <div class="chips" id="ideas"></div>
+        </div>
+
+        <div id="customFields" hidden>
+          <div class="field">
+            <label for="title">Title</label>
+            <input id="title" maxlength="100" placeholder="Midnight Monsoon" />
+          </div>
+          <div class="field">
+            <label for="style">Style of music</label>
+            <input id="style" maxlength="1000" placeholder="lo-fi hip hop, sitar, mellow, female vocals" />
+          </div>
+          <div class="field" id="lyricsField">
+            <label for="lyrics">Lyrics</label>
+            <textarea id="lyrics" rows="8" maxlength="5000" placeholder="[Verse]&#10;Rain on the window...&#10;&#10;[Chorus]&#10;..."></textarea>
+            <div class="hint"><span id="lyricsCount">0</span>/5000</div>
+          </div>
+          <div class="field">
+            <label for="neg">Exclude styles <span class="muted">(optional)</span></label>
+            <input id="neg" maxlength="200" placeholder="heavy metal, screaming" />
+          </div>
+        </div>
+
+        <div class="row">
+          <label class="toggle">
+            <input type="checkbox" id="instrumental" />
+            <span class="slider"></span> Instrumental
+          </label>
+          <label class="select">
+            Model
+            <select id="model">
+              <option value="V5">V5 (latest)</option>
+              <option value="V4_5PLUS">V4.5+</option>
+              <option value="V4_5" selected>V4.5</option>
+              <option value="V4">V4</option>
+              <option value="V3_5">V3.5</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="error" id="error" hidden></div>
+        <button class="primary" type="submit" id="go">
+          <span class="btn-label">Generate ✨</span>
+        </button>
+      </form>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Your songs</h2>
+        <button class="link" id="clear" type="button">Clear history</button>
+      </div>
+      <div id="list" class="list"></div>
+      <p class="empty" id="empty">No songs yet. Generate your first one above.</p>
+    </section>
+  </main>
+
+  <dialog id="pwDialog">
+    <form method="dialog" id="pwForm">
+      <h3>Enter passcode</h3>
+      <p class="muted">This site is protected. Ask the owner for the passcode.</p>
+      <input id="pwInput" type="password" placeholder="Passcode" required />
+      <button class="primary" value="ok">Continue</button>
+    </form>
+  </dialog>
+
+  <footer class="foot">Powered by SunoAPI.org</footer>
+  <script src="app.js"></script>
+</body>
+</html>
