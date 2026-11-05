@@ -161,12 +161,48 @@
     const list = $("list");
     $("empty").hidden = jobs.length > 0;
     list.innerHTML = jobs.map(renderJob).join("");
+    list.querySelectorAll("[data-dl]").forEach((b) => b.addEventListener("click", () => download(b)));
     list.querySelectorAll("[data-lyrics]").forEach((b) =>
       b.addEventListener("click", () => {
         const el = document.getElementById(b.dataset.lyrics);
         el.hidden = !el.hidden;
       })
     );
+  }
+
+  async function download(btn) {
+    if (btn.disabled) return;
+    const label = btn.textContent;
+    btn.disabled = true; btn.textContent = "Downloading…";
+    try {
+      let blob;
+      try {
+        // Try the file host directly first (works if it allows cross-origin requests).
+        const direct = await fetch(btn.dataset.url, { mode: "cors" });
+        if (!direct.ok) throw new Error();
+        blob = await direct.blob();
+      } catch {
+        // Otherwise go through our own function, which serves the file as an attachment.
+        const res = await fetch(`/api/download?taskId=${encodeURIComponent(btn.dataset.task)}&id=${encodeURIComponent(btn.dataset.dl)}`, {
+          headers: { "x-app-password": getPw() },
+        });
+        if (!res.ok) {
+          let msg = `Download failed (${res.status})`;
+          try { msg = (await res.json()).error || msg; } catch {}
+          throw new Error(msg);
+        }
+        blob = await res.blob();
+      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = btn.dataset.name || "song.mp3";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (e) {
+      alert(e.message || "Download failed. Try again in a moment.");
+    } finally {
+      btn.disabled = false; btn.textContent = label;
+    }
   }
 
   function renderJob(job) {
@@ -205,7 +241,7 @@
           <div class="tags">${esc([t.tags, fmtDur(t.duration)].filter(Boolean).join(" · "))}</div>
           <audio controls preload="none" src="${esc(audio)}"></audio>
           <div class="tactions">
-            ${safeUrl(t.audioUrl) ? `<a href="${esc(t.audioUrl)}" download="${esc(fname)}" target="_blank" rel="noopener">Download</a>` : `<span class="muted">Finalizing download…</span>`}
+            ${safeUrl(t.audioUrl) && t.id ? `<button type="button" data-dl="${esc(t.id)}" data-task="${esc(job.taskId)}" data-name="${esc(fname)}" data-url="${esc(t.audioUrl)}">Download</button>` : `<span class="muted">Finalizing download…</span>`}
             ${t.lyrics ? `<button type="button" data-lyrics="${esc(lid)}">Lyrics</button>` : ""}
           </div>
         </div>

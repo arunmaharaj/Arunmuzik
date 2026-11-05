@@ -19,6 +19,7 @@ netlify/functions/
   generate.mjs          → POST /api/generate       (starts a song)
   status.mjs            → GET  /api/status?taskId= (polls progress)
   credits.mjs           → GET  /api/credits        (remaining credits)
+  download.mjs          → GET  /api/download       (saves a track as an .mp3 file)
   callback.mjs          → callback URL required by SunoAPI.org
 netlify.toml            → build + /api/* routing
 ```
